@@ -491,8 +491,8 @@ function toggleApp(uid,pkg,checkbox){
     const cmd="printf '"+line+"' >> "+BLOCK_FILE;
     runShell(cmd,(c)=>{
       if(c===0){
-        runShell("iptables -C NETBLOCK -m owner --uid-owner "+uid+" -j DROP 2>/dev/null || iptables -A NETBLOCK -m owner --uid-owner "+uid+" -j DROP",()=>{
-          runShell("ip6tables -C NETBLOCK -m owner --uid-owner "+uid+" -j DROP 2>/dev/null || ip6tables -A NETBLOCK -m owner --uid-owner "+uid+" -j DROP",()=>{
+        runShell("iptables -C NETBLOCK -m owner --uid-owner "+uid+" -j REJECT 2>/dev/null || iptables -A NETBLOCK -m owner --uid-owner "+uid+" -j REJECT",()=>{
+          runShell("ip6tables -C NETBLOCK -m owner --uid-owner "+uid+" -j REJECT 2>/dev/null || ip6tables -A NETBLOCK -m owner --uid-owner "+uid+" -j REJECT",()=>{
             toast(name+" offline");
             updateStats();
             updateStatus();
@@ -515,7 +515,7 @@ function toggleApp(uid,pkg,checkbox){
     const cmd=newContent===""?"> "+BLOCK_FILE:"printf '"+newContent+"' > "+BLOCK_FILE;
     runShell(cmd,(c)=>{
       if(c===0){
-        runShell("iptables -D NETBLOCK -m owner --uid-owner "+uid+" -j DROP 2>/dev/null; ip6tables -D NETBLOCK -m owner --uid-owner "+uid+" -j DROP 2>/dev/null",()=>{
+        runShell("iptables -D NETBLOCK -m owner --uid-owner "+uid+" -j REJECT 2>/dev/null; ip6tables -D NETBLOCK -m owner --uid-owner "+uid+" -j REJECT 2>/dev/null",()=>{
           toast(name+" online");
           updateStats();
           updateStatus();
@@ -636,7 +636,7 @@ function importBackup(){
               if(total===0){toast("Import complete");loadApps();return}
               data.blocked.forEach(app=>{
                 if(!app.uid){done++;return}
-                runShell("iptables -A NETBLOCK -m owner --uid-owner "+app.uid+" -j DROP && ip6tables -A NETBLOCK -m owner --uid-owner "+app.uid+" -j DROP",()=>{done++;if(done===total){toast("Import complete");loadApps()}})
+                runShell("iptables -A NETBLOCK -m owner --uid-owner "+app.uid+" -j REJECT && ip6tables -A NETBLOCK -m owner --uid-owner "+app.uid+" -j REJECT",()=>{done++;if(done===total){toast("Import complete");loadApps()}})
               })
             })
           }else{toast("Import failed")}
@@ -671,7 +671,7 @@ function reapplyAllRules(){
   runShell("iptables -F NETBLOCK && ip6tables -F NETBLOCK",()=>{
     let done=0;
     if(blockedMap.size===0){toast("No rules to apply");return}
-    blockedMap.forEach((pkg,uid)=>{runShell("iptables -A NETBLOCK -m owner --uid-owner "+uid+" -j DROP && ip6tables -A NETBLOCK -m owner --uid-owner "+uid+" -j DROP",()=>{done++;if(done===blockedMap.size)toast("All rules reapplied")})})
+    blockedMap.forEach((pkg,uid)=>{runShell("iptables -A NETBLOCK -m owner --uid-owner "+uid+" -j REJECT && ip6tables -A NETBLOCK -m owner --uid-owner "+uid+" -j REJECT",()=>{done++;if(done===blockedMap.size)toast("All rules reapplied")})})
   })
 }
 
