@@ -37,14 +37,14 @@ apply_blocks(){
       # This covers TCP, UDP, ICMP, and any other protocols
       
       # IPv4: Block all protocols
-      if ! iptables -C NETBLOCK -m owner --uid-owner "$uid" -j DROP 2>/dev/null; then
-        iptables -A NETBLOCK -m owner --uid-owner "$uid" -j DROP
+      if ! iptables -C NETBLOCK -m owner --uid-owner "$uid" -j REJECT 2>/dev/null; then
+        iptables -A NETBLOCK -m owner --uid-owner "$uid" -j REJECT
         log_msg "Blocked all traffic for UID $uid"
       fi
       
       # IPv6: Block all protocols  
-      if ! ip6tables -C NETBLOCK -m owner --uid-owner "$uid" -j DROP 2>/dev/null; then
-        ip6tables -A NETBLOCK -m owner --uid-owner "$uid" -j DROP
+      if ! ip6tables -C NETBLOCK -m owner --uid-owner "$uid" -j REJECT 2>/dev/null; then
+        ip6tables -A NETBLOCK -m owner --uid-owner "$uid" -j REJECT
       fi
       
       count=$((count + 1))
